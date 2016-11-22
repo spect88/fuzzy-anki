@@ -43,7 +43,7 @@ function tabulate(datatable, columns, containerString) {
     return table;
 }
 
-function sqlToTable(uInt8ArraySQLdb) {
+function sqlToDeckNotes(uInt8ArraySQLdb) {
     var db = new SQL.Database(uInt8ArraySQLdb);
 
     // Decks table (for deck names)
@@ -76,13 +76,7 @@ function sqlToTable(uInt8ArraySQLdb) {
         return {name : modelName, notes : notesArray, fieldNames : fieldNames};
     });
 
-    // Visualize!
-    _.each(deckNotes, function(model, idx) {
-        d3.select("#anki").append("h2").text(model.name);
-        var deckId = "deck-" + idx;
-        d3.select("#anki").append("div").attr("id", deckId);
-        tabulate(model.notes, model.fieldNames, "#" + deckId);
-    });
+    return deckNotes;
 }
 
 function parseImages(imageTable,unzip,filenames){
@@ -116,13 +110,13 @@ function converterEngine (input) { // fn BLOB => Binary => Base64 ?
     return base64;
 }
 
-function ankiBinaryToTable(ankiArray, options) {
+function ankiBinaryToDeckNotes(ankiArray, options) {
     var compressed = new Uint8Array(ankiArray);
     var unzip = new Zlib.Unzip(compressed);
     var filenames = unzip.getFilenames();
     if (filenames.indexOf("collection.anki2") >= 0) {
         var plain = unzip.decompress("collection.anki2");
-        sqlToTable(plain);
+        var deckNotes = sqlToDeckNotes(plain);
         if (options && options.loadImage){
             if (filenames.indexOf("media") >= 0) {
                 var plainmedia = unzip.decompress("media");
@@ -134,13 +128,71 @@ function ankiBinaryToTable(ankiArray, options) {
                 f.readAsText(bb);
             }
         }
+        return deckNotes;
     }
 }
 
+function drawTable(deckNotes) {
+    $('#anki').html('');
+    _.each(deckNotes, function(model, idx) {
+        d3.select("#anki").append("h2").text(model.name);
+        var deckId = "deck-" + idx;
+        d3.select("#anki").append("div").attr("id", deckId);
+        tabulate(model.notes, model.fieldNames, "#" + deckId);
+    });
+}
+
+function filterNotes(notes, query) {
+    if (!query) return notes;
+
+    var matching = _.filter(notes, function(note) {
+        return _.some(note, function(value) {
+            return String(value).indexOf(query) !== -1
+        });
+    });
+
+    var regexp = new RegExp(escapeRegExp(query), 'g');
+    var highlightedQuery =
+      $('<span/>').addClass('search-highlighted').text(query)[0].outerHTML;
+
+    return _.map(matching, function(note) {
+        return _.mapObject(note, function(value) {
+            var replaced = String(value).replace(regexp, highlightedQuery);
+            return replaced;
+        });
+    });
+}
+
+function filterDecks(deckNotes, query) {
+    return _.map(deckNotes, function(model, idx) {
+        return {
+            name: model.name,
+            fieldNames: model.fieldNames,
+            notes: filterNotes(model.notes, query)
+        };
+    });
+}
+
+function filterAndDrawDecks(deckNotes, query) {
+    drawTable(filterDecks(deckNotes, query));
+}
+
+// Source: http://stackoverflow.com/a/6969486
+function escapeRegExp(str) {
+    return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+}
+
+function arrayNamesToObj(fields, values) {
+    var obj = {};
+    for (i in values) {
+        obj[fields[i]] = values[i];
+    }
+    return obj;
+}
 
 $(document).ready(function() {
-    var options = { loadImage: false };
-    var eventHandleToTable = function(event) {
+    var deckNotes;
+    var onFileChange = function(event) {
         event.stopPropagation();
         event.preventDefault();
         var f = event.target.files[0];
@@ -149,22 +201,24 @@ $(document).ready(function() {
         }
 
         var reader = new FileReader();
-        if ("function" in event.data) {
-            reader.onload =
-                function(e) { event.data.function(e.target.result); };
-        } else {
-            reader.onload = function(e) { ankiBinaryToTable(e.target.result, options); };
-        }
+        reader.onload = function(e) {
+            deckNotes =
+                ankiBinaryToDeckNotes(e.target.result, { loadImage: false });
+
+            $('.apkg-upload').hide();
+            $('.searchbox').show();
+
+            filterAndDrawDecks(deckNotes, '');
+        };
         reader.readAsArrayBuffer(f);
     };
 
-    // Deck browser
-    $("#ankiFile")
-        .change({
-                  "function" :
-                      function(data) {
-                          ankiBinaryToTable(data, options);
-                      }
-                }, eventHandleToTable);
+    var onSearchQueryChange = function(event) {
+        filterAndDrawDecks(deckNotes, $('.searchbox input').val());
+    };
 
+    // Deck browser
+    $('.apkg-upload input').change(onFileChange);
+
+    $('.searchbox input').keydown(_.debounce(onSearchQueryChange, 500));
 });

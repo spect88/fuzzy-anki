@@ -34,3 +34,16 @@ a:hover {
     text-decoration: none;
 }
 
+.searchbox input {
+    border: 1px solid #000;
+    border-radius: 5px;
+    width: 480px;
+    height: 48px;
+    font-size: 24px;
+    padding: 0 10px;
+}
+
+span.search-highlighted {
+    background: #22f;
+    color: #fff;
+}
