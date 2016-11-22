@@ -1,46 +1,27 @@
 <html>
 <head>
-    <meta charset="UTF-8">
-    <title>Fuzzy-Anki</title>
+  <meta charset="UTF-8">
+  <title>Fuzzy-Anki</title>
 
-    <link rel="stylesheet" type="text/css" href="apkg.css">
-    <link rel="stylesheet" type="text/css" href="c3.min.css">
+  <link rel="stylesheet" type="text/css" href="apkg.css">
 
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js" charset="utf-8"></script>
-    <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
-    <script src="https://kripken.github.io/sql.js/js/sql.js" charset="utf-8"></script>
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js" charset="utf-8"></script>
+  <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+  <script src="https://kripken.github.io/sql.js/js/sql.js" charset="utf-8"></script>
 
-    <script src="c3.min.js" charset="utf-8"></script>
-    <script src="unzip.min.js" charset="utf-8"></script>
-    <script src="xregexp-all-min.js" charset="utf-8"></script>
-    <script src="underscore-min.js" charset="utf-8"></script>
-    <script src="apkg.js" charset="utf-8"></script>
+  <script src="unzip.min.js" charset="utf-8"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js" charset="utf-8"></script>
+  <script src="apkg.js" charset="utf-8"></script>
 </head>
 
 <body>
+  <div>
+    Select an <a href="http://ankisrs.net">Anki</a> APKG file from your computer:
+    <input type="file" id="ankiFile" name="files">
+  </div>
 
-    <h1 class="heading">Fuzzy-Anki Deck Browser</h1>
-    <h2 class="heading">Turn your web browser into an <a href="http://ankisrs.net">Anki</a> browser!</h2>
+  <div id="anki"></div>
 
-    <div id="fileSelector">
-    <h3>Browse notes and facts</h3>
-    <ul>
-    <li>Upload an Anki APKG file from your computer: <input type="file" id="ankiFile" name="files">.
-    <li>
-    <em>Experimental!</em> Enter a URL of a public Anki deck: <input type="text" id="ankiURL" size="20"> <button id="ankiURLSubmit">Submit URL</button>. (Note to <a href="https://ankiweb.net/shared/decks/">Ankiweb Shared Decks</a> users: use deck's <span class="ankiweb-download">Download</span> link, not the URL of the page describing it.)
-    <li> <input type="checkbox" id="showImage"> Show images? (If checked, Images will be loaded, but <em>would cause long loading time for big files</em>.)
-    </ul>
-
-    <h3>View reviews</h3>
-    <ol>
-        <li>Get only <input type="text" id="sqliteLimit" size="5" value="150"> reviews. <input type="checkbox" id="sqliteRecent" checked> Most recent? (If unchecked, show the oldest.)
-        <li>Upload your <b>collection.anki2</b> file, usually found in <tt>Documents/Anki/&lt;your name&gt;/<b>collection.anki2</b></tt> <input type="file" id="sqliteFile" name="files">
-    </ol>
-
-    </div>
-
-    <div id="anki"></div>
-
-    <a href="https://github.com/fasiha/fuzzy-anki"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/a6677b08c955af8400f44c6298f40e7d19cc5b2d/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677261795f3664366436642e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png"></a>
+  <a href="https://github.com/spect88/fuzzy-anki"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/a6677b08c955af8400f44c6298f40e7d19cc5b2d/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677261795f3664366436642e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png"></a>
 </body>
 </html>
