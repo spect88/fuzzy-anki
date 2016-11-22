@@ -135,7 +135,9 @@ function ankiBinaryToDeckNotes(ankiArray, options) {
 function drawTable(deckNotes) {
     $('#anki').html('');
     _.each(deckNotes, function(model, idx) {
-        d3.select("#anki").append("h2").text(model.name);
+        if (deckNotes.length > 1) {
+            d3.select("#anki").append("h2").text(model.name);
+        }
         var deckId = "deck-" + idx;
         d3.select("#anki").append("div").attr("id", deckId);
         tabulate(model.notes, model.fieldNames, "#" + deckId);
@@ -207,6 +209,7 @@ $(document).ready(function() {
 
             $('.apkg-upload').hide();
             $('.searchbox').show();
+            $('.zoombox').show();
 
             filterAndDrawDecks(deckNotes, '');
         };
@@ -217,8 +220,28 @@ $(document).ready(function() {
         filterAndDrawDecks(deckNotes, $('.searchbox input').val());
     };
 
+    var onZoomClick = function(event) {
+        var button = event.currentTarget;
+        var className = _.find(button.classList, function(cls) {
+            return cls.indexOf('font-') === 0;
+        });
+
+        $('#anki')
+            .removeClass('font-small')
+            .removeClass('font-normal')
+            .removeClass('font-large')
+            .removeClass('font-very-large')
+            .removeClass('font-super-large')
+            .addClass(className);
+
+        $('.zoombox button').removeClass('active');
+        $(button).addClass('active');
+    };
+
     // Deck browser
     $('.apkg-upload input').change(onFileChange);
 
     $('.searchbox input').keydown(_.debounce(onSearchQueryChange, 500));
+
+    $('.zoombox button').click(onZoomClick);
 });

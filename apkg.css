@@ -47,3 +47,49 @@ span.search-highlighted {
     background: #22f;
     color: #fff;
 }
+
+.font-small {
+    font-size: 0.8em;
+}
+
+.font-normal {
+    font-size: 1em;
+}
+
+.font-large {
+    font-size: 1.2em;
+}
+
+.font-very-large {
+    font-size: 1.5em;
+}
+
+.font-super-large {
+    font-size: 2em;
+}
+
+table {
+    font-size: inherit;
+}
+
+.zoombox {
+    text-align: center;
+    width: 440px;
+}
+
+.searchbox {
+    margin: 10px 0;
+}
+
+.zoombox button {
+    background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 2px;
+    color: #000;
+    cursor: pointer;
+}
+
+.zoombox button.active {
+    color: #22f;
+    background: #e0e0e0;
+}
